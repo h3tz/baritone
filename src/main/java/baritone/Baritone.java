@@ -71,6 +71,7 @@ public class Baritone implements IBaritone {
 
     private FollowProcess followProcess;
     private MineProcess mineProcess;
+    private ScanProcess scanProcess;
     private GetToBlockProcess getToBlockProcess;
     private CustomGoalProcess customGoalProcess;
     private BuilderProcess builderProcess;
@@ -106,6 +107,7 @@ public class Baritone implements IBaritone {
         {
             this.pathingControlManager.registerProcess(followProcess = new FollowProcess(this));
             this.pathingControlManager.registerProcess(mineProcess = new MineProcess(this));
+            this.pathingControlManager.registerProcess(scanProcess = new ScanProcess(this));
             this.pathingControlManager.registerProcess(customGoalProcess = new CustomGoalProcess(this)); // very high iq
             this.pathingControlManager.registerProcess(getToBlockProcess = new GetToBlockProcess(this));
             this.pathingControlManager.registerProcess(builderProcess = new BuilderProcess(this));
@@ -182,6 +184,10 @@ public class Baritone implements IBaritone {
     @Override
     public MineProcess getMineProcess() {
         return this.mineProcess;
+    }
+
+    public ScanProcess getScanProcess() {
+        return this.scanProcess;
     }
 
     public FarmProcess getFarmProcess() {
