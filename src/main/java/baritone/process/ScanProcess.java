@@ -41,9 +41,13 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import baritone.utils.accessor.IBlockStateContainer;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.io.FileWriter;
+import java.io.IOException;  // Import the IOException class to handle errors
 
 import static baritone.api.pathing.movement.ActionCosts.COST_INF;
 
@@ -238,6 +242,25 @@ public final class ScanProcess extends BaritoneProcessHelper implements IScanPro
         }
 
         //its time to save into file
+        try
+        {
+            FileWriter myWriter = new FileWriter("scannerOutput.txt");
+            for(ChunkInformation chunkitem : allChunks)
+            {
+                //IBlockStateContainer bsc = (IBlockStateContainer) chunk.extendedblockstorage.getData();
+                //IBlockState state = bsc.getAtPalette(storage[0]);
+                //IBlockStateContainer bsc = (IBlockStateContainer) chunkitem.extendedblockstorage.getData();
+
+                myWriter.write(" x: " + chunkitem.blockpos.getX() + " y: " + chunkitem.blockpos.getY() + " z: " + chunkitem.blockpos.getZ()+ " block: "  +chunkitem.extendedblockstorage + "\n");
+            }
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        }
+        catch (IOException e)
+        {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
 
 
         knownOreLocations = locs;
