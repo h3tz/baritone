@@ -225,7 +225,8 @@ public final class ScanProcess extends BaritoneProcessHelper implements IScanPro
             return;
         }
         List<BlockPos> dropped = droppedItemsScan();
-        List<BlockPos> locs = searchWorld(context, filter, ORE_LOCATIONS_COUNT, already, blacklist, dropped);
+        List<ChunkInformation> allChunks = new ArrayList<ChunkInformation>();
+        List<BlockPos> locs = searchWorld(context, filter, ORE_LOCATIONS_COUNT, already, blacklist, dropped, allChunks);
         locs.addAll(dropped);
         if (locs.isEmpty()) {
             logDirect("No locations for " + filter + " known, cancelling");
@@ -235,6 +236,10 @@ public final class ScanProcess extends BaritoneProcessHelper implements IScanPro
             cancel();
             return;
         }
+
+        //its time to save into file
+
+
         knownOreLocations = locs;
     }
 
@@ -329,7 +334,7 @@ public final class ScanProcess extends BaritoneProcessHelper implements IScanPro
         return ret;
     }
 
-    public static List<BlockPos> searchWorld(CalculationContext ctx, BlockOptionalMetaLookup filter, int max, List<BlockPos> alreadyKnown, List<BlockPos> blacklist, List<BlockPos> dropped) {
+    public static List<BlockPos> searchWorld(CalculationContext ctx, BlockOptionalMetaLookup filter, int max, List<BlockPos> alreadyKnown, List<BlockPos> blacklist, List<BlockPos> dropped,  List<ChunkInformation> allblocks) {
         List<BlockPos> locs = new ArrayList<>();
         List<Block> untracked = new ArrayList<>();
         for (BlockOptionalMeta bom : filter.blocks()) {
@@ -358,7 +363,8 @@ public final class ScanProcess extends BaritoneProcessHelper implements IScanPro
                     filter,
                     max,
                     10,
-                    32
+                    32,
+                    allblocks
             )); // maxSearchRadius is NOT sq
         }
 

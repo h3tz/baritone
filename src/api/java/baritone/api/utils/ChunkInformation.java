@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  *
  * @author leijurv
  */
-public final class ChunkInformation  {
+public class ChunkInformation  {
     public final IBlockState extendedblockstorage;
     public final BlockPos blockpos;
 
@@ -44,5 +44,11 @@ public final class ChunkInformation  {
         //super(x, y, z);
         this.blockpos = blockpos;
         this.extendedblockstorage = extendedblockstorage;
+    }
+
+    public ChunkInformation() {
+        //super(x, y, z);
+        this.blockpos = new BlockPos(0,0,0);
+        this.extendedblockstorage = null;
     }
 }
