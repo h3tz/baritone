@@ -22,6 +22,7 @@ import baritone.api.cache.IWorldScanner;
 import baritone.api.utils.BetterBlockPos;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.api.utils.IPlayerContext;
+import baritone.api.utils.ChunkInformation;
 import baritone.utils.accessor.IBlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
@@ -163,7 +164,7 @@ public enum WorldScanner implements IWorldScanner {
             final int imax = 1 << 12;
             for (int i = 0; i < imax; i++) {
                 IBlockState state = bsc.getAtPalette(storage[i]);
-                if (filter.has(state)) {
+
                     int y = yReal | ((i >> 8) & 15);
                     if (result.size() >= max) {
                         if (Math.abs(y - playerY) < yLevelThreshold) {
@@ -176,8 +177,9 @@ public enum WorldScanner implements IWorldScanner {
                             }
                         }
                     }
+                    ChunkInformation mychunkInfo = new ChunkInformation(new BlockPos(chunkX | (i & 15), y, chunkZ | ((i >> 4) & 15)), state);
                     result.add(new BlockPos(chunkX | (i & 15), y, chunkZ | ((i >> 4) & 15)));
-                }
+
             }
         }
         return foundWithinY;
