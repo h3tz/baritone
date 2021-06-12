@@ -18,57 +18,61 @@
 package baritone.command.defaults;
 
 import baritone.api.IBaritone;
+import baritone.api.pathing.calc.IPathingControlManager;
+import baritone.api.process.IBaritoneProcess;
+import baritone.api.behavior.IPathingBehavior;
 import baritone.api.command.Command;
-import baritone.api.command.argument.IArgConsumer;
-import baritone.api.command.datatypes.RelativeGoalXZ;
 import baritone.api.command.exception.CommandException;
-import baritone.api.pathing.goals.GoalXZ;
+import baritone.api.command.exception.CommandInvalidStateException;
+import baritone.api.command.argument.IArgConsumer;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class ExploreCommand extends Command {
+public class ETACommand extends Command {
 
-    public ExploreCommand(IBaritone baritone) {
-        super(baritone, "explore");
+    public ETACommand(IBaritone baritone) {
+        super(baritone, "eta");
     }
 
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
-        if (args.hasAny()) {
-            args.requireExactly(2);
-        } else {
-            args.requireMax(0);
+        args.requireMax(0);
+        IPathingControlManager pathingControlManager = baritone.getPathingControlManager();
+        IBaritoneProcess process = pathingControlManager.mostRecentInControl().orElse(null);
+        if (process == null) {
+            throw new CommandInvalidStateException("No process in control");
         }
-        GoalXZ goal = args.hasAny()
-                ? args.getDatatypePost(RelativeGoalXZ.INSTANCE, ctx.playerFeet())
-                : new GoalXZ(ctx.playerFeet());
-        baritone.getExploreProcess().explore(goal.getX(), goal.getZ());
-        logDirect(String.format("Exploring from %s", goal.toString()));
+        IPathingBehavior pathingBehavior = baritone.getPathingBehavior();
+        logDirect(String.format(
+                "Next segment: %.2f\n" +
+                "Goal: %.2f",
+                pathingBehavior.ticksRemainingInSegment().orElse(-1.0),
+                pathingBehavior.estimatedTicksToGoal().orElse(-1.0)
+        ));
     }
 
     @Override
     public Stream<String> tabComplete(String label, IArgConsumer args) {
-        if (args.hasAtMost(2)) {
-            return args.tabCompleteDatatype(RelativeGoalXZ.INSTANCE);
-        }
         return Stream.empty();
     }
 
     @Override
     public String getShortDesc() {
-        return "Explore things";
+        return "View the current ETA";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Tell Baritone to explore randomly. If you used explorefilter before this, it will be applied.",
+                "The ETA command provides information about the estimated time until the next segment.",
+                "and the goal",
+                "",
+                "Be aware that the ETA to your goal is really unprecise",
                 "",
                 "Usage:",
-                "> explore - Explore from your current position.",
-                "> explore <x> <z> - Explore from the specified X and Z position."
+                "> eta - View ETA, if present"
         );
     }
 }
